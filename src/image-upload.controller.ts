@@ -5,7 +5,7 @@ import { ImageUploadService } from "./image-upload.service";
 export class ImageUploadController {
   constructor(private readonly imageUploadService: ImageUploadService) {}
 
-  @Post()
+  @Post("/upload-file")
   async create(@Req() request, @Res() response) {
     try {
       await this.imageUploadService.fileupload(request, response);
