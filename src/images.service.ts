@@ -14,7 +14,7 @@ AWS.config.update({
 });
 
 @Injectable()
-export class ImageUploadService {
+export class ImagesService {
   async fileupload(@Req() req, @Res() res) {
     try {
       this.upload(req, res, (error) => {
@@ -26,6 +26,40 @@ export class ImageUploadService {
     } catch (error) {
       return res.status(500).json(`Failed to upload image file: ${error}`);
     }
+  }
+
+  async listImages(@Req() req, @Res() res) {
+    try {
+      const images = await this.getImages();
+      const urlObjects = this.retrieveImagesFromUrl(images);
+      return res.status(201).json(urlObjects);
+    } catch (error) {
+      return res.status(500).json(`Failed to list images: ${error}`);
+    }
+  }
+
+  private getImages() {
+    const parameters = {
+      Bucket: AWS_S3_BUCKET_NAME
+    }
+    return new Promise((resolve, reject) => {
+      s3.listObjects(parameters, (error, data) => {
+        if (error) {
+          throw Error(`Failed to list images: ${error}`);
+        }
+        resolve(data.Contents);
+      });
+      }
+    )
+  }
+
+  private retrieveImagesFromUrl(images) {
+    const urls = [];
+    images.forEach(image => {
+      const imgKey = image.Key.split(" ").join("+");
+      urls.push(`http://${AWS_S3_BUCKET_NAME}.s3.amazonaws.com/${imgKey}`)
+    });
+    return urls;
   }
 
   upload = multer({

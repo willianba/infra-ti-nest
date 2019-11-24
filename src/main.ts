@@ -1,8 +1,8 @@
 import { NestFactory } from "@nestjs/core";
-import { ImageUploadModule } from "./image-upload.module";
+import { ImagesModule } from "./images.module";
 
 async function bootstrap() {
-  const app = await NestFactory.create(ImageUploadModule);
+  const app = await NestFactory.create(ImagesModule);
   app.enableCors();
   await app.listen(3000);
 }
